@@ -23,11 +23,17 @@ def remove_guess_from_alphabet(alphabet, guess)
     alphabet = alphabet.join(' ')
 end
 
+def update_hidden_word(letter, location_correct)
+    word_to_array = hidden_word.split(' ')
+    word_to_array[location_correct] = letter
+end
+
 def check_guess(guess, word)
     location_correct = -1
     word.split(' ').each do |letter|
         if guess == letter
             location_correct = word.find_index(letter)
+            update_hidden_word(letter, location_correct)
         end
     end
 end
@@ -53,11 +59,6 @@ def play (word, guesses_remaining, players_guess, alphabet)
     guess = guess(guesses_remaining)
     
     check_guess = check_guess(guess, word)
-    if check_guess >= 0
-        show_letter
-        change_alphabet
-    end
-
 end
 
-
+play(word, guesses_remaining, guess(guesses_remaining), alphabet)

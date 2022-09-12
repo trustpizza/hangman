@@ -1,64 +1,37 @@
-require 'pry-byebug'
+word = 'grace' # Eventually will need to generate a random word
+word_to_array = word.split('')
 
-word = 'grace'
-
-guesses_remaining = 6
-
-alphabet = ('a'..'z').to_a
-
-def hide_word(word)
+def blankify(word)
     out = ""
-    word.length.times { out += "_ "}
+    word.length.times { out += "_"}
     out
 end
 
-def guess(guesses_remaining)  
-    puts "Guess a letter!"
-    guesses_remaining -= 1
+def guess
+    puts 'Choose a letter'
     guess = gets.chomp.downcase.split('')[0]
-end
+end 
 
-def remove_guess_from_alphabet(alphabet, guess)
-    alphabet.delete(guess)
-    alphabet = alphabet.join(' ')
-end
+blank_word = blankify(word)
+puts blank_word
 
-def update_hidden_word(letter, location_correct)
-    word_to_array = hidden_word.split(' ')
-    word_to_array[location_correct] = letter
-end
-
-def check_guess(guess, word)
-    location_correct = -1
-    word.split(' ').each do |letter|
-        if guess == letter
-            location_correct = word.find_index(letter)
-            update_hidden_word(letter, location_correct)
+def de_blankify(blank_word, word_to_array, guess)
+    word_to_array.each_with_index do |letter, index|
+        if letter == guess
+            blank_word[index] = guess
         end
     end
 end
 
-def change_hidden_word(hidden_word, guess)
-    hidden_word
-end
+de_blankify(blank_word, word_to_array, guess)
 
-def game_over?(guesses_remaining, players_guess)
-    if players_guess == word
-        puts "You Win"
-    elsif guesses_remaining == 0
-        puts "You Lose"
+game_over = false
+
+def play(blank_word, word_to_array, game_over)
+    until game_over == true
+        guess = guess()
+        de_blankify(blank_word, word_to_array, guess)
     end
 end
-
-def play (word, guesses_remaining, players_guess, alphabet)
-    hidden_word = hide_word(word)
-    puts hidden_word
-
-    puts alphabet
-
-    guess = guess(guesses_remaining)
-    
-    check_guess = check_guess(guess, word)
-end
-
-play(word, guesses_remaining, guess(guesses_remaining), alphabet)
+        
+play(blank_word, word_to_array, game_over)

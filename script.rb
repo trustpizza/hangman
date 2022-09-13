@@ -56,6 +56,7 @@ def play(word, word_to_array)
     win = check_win(blank_word, word)
 
     rounds_left -= 1
+    puts "You have #{rounds_left} guesses left"
     lose = check_lose(rounds_left, win)
   end
 end

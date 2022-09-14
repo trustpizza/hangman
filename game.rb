@@ -13,13 +13,13 @@ class Game
     @progress = de_blankify(@blank_word, @word_to_array, @guess)
   end
 
-  def blankify(_word)
+  def blankify(word)
     out = ''
     @word.length.times { out += '_' }
     out
   end
 
-  def de_blankify(_blank_word, _word_to_array, _guess)
+  def de_blankify(blank_word, word_to_array, guess)
     @word_to_array.each_with_index do |letter, index|
       @blank_word[index] = @guess if letter == @guess
     end
@@ -31,7 +31,7 @@ class Game
     out = gets.chomp.downcase.split('')[0]
   end
 
-  def check_win(_word, _blank_word, _game_over)
+  def check_win(word, blank_word, game_over)
     if @blank_word == @word
       puts 'You Win!'
       @game_over = true
@@ -39,7 +39,7 @@ class Game
     @game_over
   end
 
-  def check_lose(_rounds_left, _win)
+  def check_lose(rounds_left, win)
     out = false
     if @rounds_left.zero? && @win == false
       puts 'You Lose!'
@@ -48,16 +48,17 @@ class Game
     out
   end
 
-  def self.play(word, word_to_array, rounds_left, progress, win, lose)
+  def play(word, word_to_array, blank_word, rounds_left, progress, win, lose)
     until @win == true || @lose == true
       @guess = get_guess()
 
+      @progress = de_blankify(blank_word, word_to_array, @guess)
       puts @progress
 
       @rounds_left -= 1
-      puts "YOu have #{@rounds_left} guesses left"
+      puts "You have #{@rounds_left} guesses left"
 
-      @win = check_win(@blank_word, @word)
+      @win = check_win(@blank_word, @word, @game_over)
 
       @lose = check_lose(@rounds_left, @win)
     end
@@ -65,6 +66,7 @@ class Game
 end
 
 new_game = Game.new('grace')
+new_game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
 
 
 

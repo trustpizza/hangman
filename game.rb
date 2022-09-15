@@ -1,16 +1,31 @@
 require 'pry-byebug'
 class Game
-  attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose
+  attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose, :alphabet
 
-  def initialize(word)
-    @word = word
+  def initialize
+    @word = select_word
     @word_to_array = @word.split('')
     @blank_word = blankify(@word)
     @guess = ''
     @game_over = false
     @win = check_win(@word, @blank_word, @game_over)
-    @rounds_left = 6
+    @rounds_left = 10
     @progress = de_blankify(@blank_word, @word_to_array, @guess)
+    @alphabet = ('a'..'z').to_a
+  end
+
+  def select_word
+    dictionary = []
+  
+    contents = File.readlines('dictionary.txt')
+    contents.each do |word|
+      unless word.length < 5 || word.length > 12
+        dictionary.push(word)
+      end
+    end
+  
+    dictionary = dictionary.map { |word| word.gsub("\n", "") }
+    dictionary.sample
   end
 
   def blankify(word)
@@ -50,7 +65,11 @@ class Game
 
   def play(word, word_to_array, blank_word, rounds_left, progress, win, lose)
     until @win == true || @lose == true
+      puts "Letters Remaining:"
+      puts @alphabet.join(' ')
+
       @guess = get_guess()
+      @alphabet.delete(@guess)
 
       @progress = de_blankify(blank_word, word_to_array, @guess)
       puts @progress
@@ -62,10 +81,11 @@ class Game
 
       @lose = check_lose(@rounds_left, @win)
     end
+    puts "The word was #{@word}"
   end
 end
 
-new_game = Game.new('grace')
+new_game = Game.new
 new_game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
 
 

@@ -5,6 +5,18 @@ class Game
   attr_accessor :word, :blank_word, :rounds_left, :progress, :alphabet
 
   def initialize
+    @word = ""
+    @word_to_array = ""
+    @blank_word = ""
+    @guess = ''
+    @game_over = ""
+    @win = ""
+    @rounds_left = ""
+    @progress = ""
+    @alphabet = ""
+  end
+
+  def new_game
     @word = select_word
     @word_to_array = @word.split('')
     @blank_word = blankify(@word)
@@ -120,7 +132,7 @@ def load_game
     json_to_hash = JSON.parse(file)
 
     game = Game.new
-    
+
     game.word = json_to_hash[:word]
     game.blank_word = json_to_hash[:blank_word]
     game.progress = json_to_hash[:progress]

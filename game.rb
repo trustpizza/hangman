@@ -2,7 +2,7 @@ require 'pry-byebug'
 require 'json'
 
 class Game
-  attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose, :alphabet
+  attr_accessor :word, :blank_word, :rounds_left, :progress, :alphabet
 
   def initialize
     @word = select_word
@@ -46,7 +46,7 @@ class Game
   def get_guess
     puts 'Choose a letter'
     out = gets.chomp.downcase.split('')[0]
-    out.nil? ? get_guess : out #Stop nil values from being passed as arguments further down the program
+    out.nil? ? get_guess : out # Stop nil values from being passed as arguments further down the program
   end
 
   def is_correct_guess(word, guess)
@@ -105,14 +105,33 @@ class Game
 
       @lose = check_lose(@rounds_left, @win)
       
-      save_game(@word, @blank_word, @progress, @rounds_left)
+      save_game(@word, @blank_word, @progress, @rounds_left, @alphabet)
     end
     puts "The word was #{@word.capitalize}"
   end
 end
 
-new_game = Game.new
-new_game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
+def load_game
+  puts "Would you like to load your saved game? [Y/N]"
+  answer = gets.chomp.downcase
 
+  if answer == "y"
+    file = File.read("./save_file.json")
+    json_to_hash = JSON.parse(file)
 
+    game = Game.new
+    
+    game.word = json_to_hash[:word]
+    game.blank_word = json_to_hash[:blank_word]
+    game.progress = json_to_hash[:progress]
+    game.rounds_left = json_to_hash[:rounds_left]
+    game.alphabet = json_to_hash[:alphabet]
 
+    game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
+  else
+    game = Game.new
+    game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
+  end
+end
+
+load_game

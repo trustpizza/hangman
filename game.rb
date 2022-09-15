@@ -71,6 +71,15 @@ class Game
     out
   end
 
+  def save_game(word, blank_word, progress, rounds_left)
+    save_file = Hash.new
+    save_file[:word] = word
+    save_file[:blank_word] = blank_word
+    save_file[:progress] = progress
+    save_file[:rounds_left] = rounds_left
+    
+  end
+
   def play(word, word_to_array, blank_word, rounds_left, progress, win, lose)
     until @win == true || @lose == true
       puts "Letters Remaining:"
@@ -89,6 +98,8 @@ class Game
       @win = check_win(@blank_word, @word, @game_over)
 
       @lose = check_lose(@rounds_left, @win)
+      
+      save_game(@word, @blank_word, @progress, @rounds_left)
     end
     puts "The word was #{@word.capitalize}"
   end

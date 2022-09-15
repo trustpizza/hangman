@@ -1,12 +1,10 @@
 require 'pry-byebug'
 
-words_sampled = File.read('google-10000-no-swears.txt')
-
 class Game
   attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose, :alphabet
 
-  def initialize(word)
-    @word = word
+  def initialize
+    @word = select_word
     @word_to_array = @word.split('')
     @blank_word = blankify(@word)
     @guess = ''
@@ -17,13 +15,27 @@ class Game
     @alphabet = ('a'..'z').to_a
   end
 
-  def blankify(_word)
+  def select_word 
+    dictionary = []
+  
+    contents = File.readlines('dictionary.txt')
+    contents.each do |word|
+      unless word.length < 5 || word.length > 12
+        dictionary.push(word)
+      end
+    end
+  
+    dictionary = dictionary.map { |word| word.gsub("\n", "") } # Otherwise values will have the \n (newline) tag and will display with an extra "_" when blankify-ed
+    dictionary.sample
+  end
+
+  def blankify(word)
     out = ''
     @word.length.times { out += '_' }
     out
   end
 
-  def de_blankify(_blank_word, _word_to_array, _guess)
+  def de_blankify(blank_word, word_to_array, guess)
     @word_to_array.each_with_index do |letter, index|
       @blank_word[index] = @guess if letter == @guess
     end
@@ -33,9 +45,16 @@ class Game
   def get_guess
     puts 'Choose a letter'
     out = gets.chomp.downcase.split('')[0]
+    out.nil? ? get_guess : out #Stop nil values from being passed as arguments further down the program
   end
 
-  def check_win(_word, _blank_word, _game_over)
+  def is_correct_guess(word, guess)
+    unless word.include?(guess) # We don't want to decrement game counter unless the guess is wrong
+      @rounds_left -= 1
+    end
+  end
+
+  def check_win(word, blank_word, game_over)
     if @blank_word == @word
       puts 'You Win!'
       @game_over = true
@@ -43,45 +62,40 @@ class Game
     @game_over
   end
 
-  def check_lose(_rounds_left, _win, word)
+  def check_lose(rounds_left, win)
     out = false
     if @rounds_left.zero? && @win == false
       puts 'You Lose!'
       out = true
     end
-    puts "The word was #{@word}"
     out
   end
 
-  def play(_word, word_to_array, blank_word, _rounds_left, _progress, _win, _lose, alphabet)
+  def play(word, word_to_array, blank_word, rounds_left, progress, win, lose)
     until @win == true || @lose == true
-      puts "Letters Remaining"
+      puts "Letters Remaining:"
       puts @alphabet.join(' ')
-      
-      @guess = get_guess
+
+      @guess = get_guess()
       @alphabet.delete(@guess)
-      
+
       @progress = de_blankify(blank_word, word_to_array, @guess)
       puts @progress
-
-      @rounds_left -= 1
-      puts "You have #{@rounds_left} guesses left"
+      
+      is_correct_guess(@word, @guess) 
+      
+      puts "You have #{@rounds_left} wrong guesses left"
 
       @win = check_win(@blank_word, @word, @game_over)
 
-      @lose = check_lose(@rounds_left, @win, @word)
+      @lose = check_lose(@rounds_left, @win)
     end
+    puts "The word was #{@word.capitalize}"
   end
 end
 
-words_to_sample = []
+new_game = Game.new
+new_game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
 
-allowed_words = File.readlines('google-10000-no-swears.txt')
-allowed_words.each do |word|
-  unless word.length < 5 || word.length > 12
-    words_to_sample.push(word)
-  end
-end
 
-new_game = Game.new(words_to_sample.sample)
-new_game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose, @alphabet)
+

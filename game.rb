@@ -1,4 +1,5 @@
 require 'pry-byebug'
+
 class Game
   attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose, :alphabet
 

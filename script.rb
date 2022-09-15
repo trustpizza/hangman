@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 word = 'grace' # Eventually will need to generate a random word
 word_to_array = word.split('')
 
@@ -8,7 +6,7 @@ def blankify(word)
   word.length.times { out += '_' }
   out
 end
-
+    
 def get_guess
   puts 'Choose a letter'
   out = gets.chomp.downcase.split('')[0]
@@ -53,10 +51,11 @@ def play(word, word_to_array)
     progress = de_blankify(blank_word, word_to_array, guess)
     puts progress
 
-    win = check_win(blank_word, word)
-
     rounds_left -= 1
     puts "You have #{rounds_left} guesses left"
+
+    win = check_win(blank_word, word)
+
     lose = check_lose(rounds_left, win)
   end
 end

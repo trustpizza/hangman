@@ -14,7 +14,7 @@ class Game
     @alphabet = ('a'..'z').to_a
   end
 
-  def select_word
+  def select_word 
     dictionary = []
   
     contents = File.readlines('dictionary.txt')
@@ -24,7 +24,7 @@ class Game
       end
     end
   
-    dictionary = dictionary.map { |word| word.gsub("\n", "") }
+    dictionary = dictionary.map { |word| word.gsub("\n", "") } # Otherwise values will have the \n (newline) tag and will display with an extra "_" when blankify-ed
     dictionary.sample
   end
 
@@ -44,6 +44,13 @@ class Game
   def get_guess
     puts 'Choose a letter'
     out = gets.chomp.downcase.split('')[0]
+    out.nil? ? get_guess : out #Stop nil values from being passed as arguments further down the program
+  end
+
+  def is_correct_guess(word, guess)
+    unless word.include?(guess) # We don't want to decrement game counter unless the guess is wrong
+      @rounds_left -= 1
+    end
   end
 
   def check_win(word, blank_word, game_over)
@@ -73,15 +80,16 @@ class Game
 
       @progress = de_blankify(blank_word, word_to_array, @guess)
       puts @progress
-
-      @rounds_left -= 1
-      puts "You have #{@rounds_left} guesses left"
+      
+      is_correct_guess(@word, @guess) 
+      
+      puts "You have #{@rounds_left} wrong guesses left"
 
       @win = check_win(@blank_word, @word, @game_over)
 
       @lose = check_lose(@rounds_left, @win)
     end
-    puts "The word was #{@word}"
+    puts "The word was #{@word.capitalize}"
   end
 end
 

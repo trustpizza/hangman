@@ -29,7 +29,7 @@ class Game
       @word = select_word
       @word_to_array = @word.split("")
       @blank_word = blankify(@word)
-      @guess = get_guess
+      @guess = ""
       @game_over = false
       @win = check_win(@word, @blank_word, @game_over)
       @rounds_left = 10

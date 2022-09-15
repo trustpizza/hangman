@@ -1,4 +1,5 @@
 require 'pry-byebug'
+require 'json'
 
 class Game
   attr_accessor :word, :word_to_array, :rounds_left, :progress, :win, :lose, :alphabet
@@ -71,13 +72,18 @@ class Game
     out
   end
 
-  def save_game(word, blank_word, progress, rounds_left)
+  def save_game(word, blank_word, progress, rounds_left, alphabet)
     save_file = Hash.new
     save_file[:word] = word
     save_file[:blank_word] = blank_word
     save_file[:progress] = progress
     save_file[:rounds_left] = rounds_left
-    
+    save_file[:alphabet] = alphabet
+
+    file_name = "save_file.json"
+    File.open(file_name, "w") do |item|
+      item.write(save_file.to_json)
+    end
   end
 
   def play(word, word_to_array, blank_word, rounds_left, progress, win, lose)

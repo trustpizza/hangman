@@ -5,27 +5,39 @@ class Game
   attr_accessor :word, :blank_word, :rounds_left, :progress, :alphabet
 
   def initialize
-    @word = ""
-    @word_to_array = ""
-    @blank_word = ""
-    @guess = ''
-    @game_over = ""
-    @win = ""
-    @rounds_left = ""
-    @progress = ""
-    @alphabet = ""
+    load_game
   end
+  
+  def load_game
+    puts "Would you like to load your saved game? [Y/N]"
+    answer = gets.chomp.downcase
+  
+    if answer == "y"
+      file = File.read("./save_file.json")
+      json_to_hash = JSON.parse(file)
 
-  def new_game
-    @word = select_word
-    @word_to_array = @word.split('')
-    @blank_word = blankify(@word)
-    @guess = ''
-    @game_over = false
-    @win = check_win(@word, @blank_word, @game_over)
-    @rounds_left = 10
-    @progress = de_blankify(@blank_word, @word_to_array, @guess)
-    @alphabet = ('a'..'z').to_a
+      @word = json_to_hash["word"]
+      @word_to_array = @word.split("")
+      @blank_word = json_to_hash["blank_word"]
+      @progress = json_to_hash["progress"]
+      @rounds_left = json_to_hash["rounds_left"]
+      @alphabet = json_to_hash["alphabet"]
+      
+      puts @progress
+      play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
+    else
+      @word = select_word
+      @word_to_array = @word.split("")
+      @blank_word = blankify(@word)
+      @guess = get_guess
+      @game_over = false
+      @win = check_win(@word, @blank_word, @game_over)
+      @rounds_left = 10
+      @progress = de_blankify(@blank_word, @word_to_array, @guess)
+      @alphabet = ('a'..'z').to_a
+
+      play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
+    end
   end
 
   def select_word 
@@ -123,27 +135,4 @@ class Game
   end
 end
 
-def load_game
-  puts "Would you like to load your saved game? [Y/N]"
-  answer = gets.chomp.downcase
-
-  if answer == "y"
-    file = File.read("./save_file.json")
-    json_to_hash = JSON.parse(file)
-
-    game = Game.new
-
-    game.word = json_to_hash[:word]
-    game.blank_word = json_to_hash[:blank_word]
-    game.progress = json_to_hash[:progress]
-    game.rounds_left = json_to_hash[:rounds_left]
-    game.alphabet = json_to_hash[:alphabet]
-
-    game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
-  else
-    game = Game.new
-    game.play(@word, @word_to_array, @blank_word, @rounds_left, @progress, @win, @lose)
-  end
-end
-
-load_game
+Game.new
